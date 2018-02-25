@@ -1,5 +1,9 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
+import socket
+import errno
+import fcntl
+import os
 
 class client:
     def __init__(self):
@@ -9,36 +13,51 @@ class client:
     def set_worker(self, worker):
         self.worker = worker
 
-    def client_start(self):
-        print("client_start")
+    def client_connect(self):
+        
         pass
 
-    def client_connecting(self):
+    def state_start(self):
+        print("client_start")
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        except socket.errno, v:
+            erronum = v[0]
+            if s == None and erronum == errno.EINTR:
+                self.client_start()
+        if s == None:
+            #transfer to "error" state
+            action = self.fsm["error"]
+            action()
+
+        fcntl.fcntl(s.fileno(), fcntl.F_SETFL, os.O_NONBLOCK | os.O_RDWR)
+
+    def state_connecting(self):
         print("client_connecting")
         pass
 
-    def client_writing(self):
+    def state_writing(self):
         print("client_writing")
         pass
 
-    def client_reading(self):
+    def state_reading(self):
         print("client_reading")
         pass
 
-    def client_error(self):
+    def state_error(self):
         print("client_error")
         pass
 
-    def client_end(self):
+    def state_end(self):
         pass
 
     def set_state_machine(self):
-        self.fsm["start"] = self.client_start
-        self.fsm["connecting"] = self.client_connecting
-        self.fsm["writing"] = self.client_writing
-        self.fsm["reading"] = self.client_reading
-        self.fsm["error"] = self.client_error
-        self.fsm["end"] = self.client_end
+        self.fsm["start"] = self.state_start
+        self.fsm["connecting"] = self.state_connecting
+        self.fsm["writing"] = self.state_writing
+        self.fsm["reading"] = self.state_reading
+        self.fsm["error"] = self.state_error
+        self.fsm["end"] = self.state_end
 
     def run_state_machine(self):
         state = "start"
