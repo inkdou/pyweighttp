@@ -17,7 +17,12 @@ class worker:
             self.progress_interval = 1
 
         for i in range(num_clients):
-            self.clients.append(client())
+            cli = client()
+            cli.set_worker(self)
+            cli.set_state_machine()
+            self.clients.append(cli)
 
     def work_thread(self):
-        print(self.id)
+        for i in range(self.num_clients):
+            cli = self.clients[i]
+            cli.run_state_machine()

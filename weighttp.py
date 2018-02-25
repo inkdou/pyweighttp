@@ -113,9 +113,9 @@ class Weighttp:
 
     def run(self):
         self.Wgetopt()
-        print("-->request: \n%s") % self.req
-        print("-->host: \n%s") % self.header_host
-        print("-->port: \n%s") % self.port
+        #print("-->request: \n%s") % self.req
+        #print("-->host: \n%s") % self.header_host
+        #print("-->port: \n%s") % self.port
 
         rest_concur = self.concur_count % self.thread_count
         rest_req = self.req_count % self.thread_count
